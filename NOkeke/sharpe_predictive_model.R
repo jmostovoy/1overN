@@ -1,12 +1,12 @@
 # Install necessary packages If not done before:
-install.packages("lubridate")
-install.packages("riskParityPortfolio")
-install.packages("NMOF")
+# install.packages("lubridate")
+# install.packages("riskParityPortfolio")
+# install.packages("NMOF")
 
 #### Initialization, Data Import, log return calcs, and important dates####
 
 # Set Working Directory & necessary packages
-setwd("~/Documents/UTO401/Thesis")
+setwd("~/GitHubCode/1overN/NOkeke/Data")
 library(lubridate) # For date calcs
 library(riskParityPortfolio) # For Risk Parity
 library(NMOF) # For Min Var
@@ -42,7 +42,7 @@ cov_dates<-which(cutoff_dates)+1
 
 # Create an array with the indices of each month shifted down 2 spots for the output file. 
 # "month3_start_indices" is not used anywhere else in the code except the output file 
-month_start_indices <- c(1,1,cov_dates[1:length(cov_dates)-1])
+month_start_indices <- c(1,cov_dates[2:length(cov_dates)-1])
 
 # Add a 1 to cov_dates since the 1st index is the start of the first month in the dataset
 cov_dates<-c(1,cov_dates)
@@ -95,71 +95,71 @@ daily_perform_rp<-rep(NA, nrow(dflr))
 daily_perform_mv<-rep(NA, nrow(dflr))
 
 #Calculate vectors of daily portfolio performance
-for(i in c(4:(length(cov_dates)))){
+for(i in c(4:(length(cov_dates)-1))){
   # Same indexing as for the covariance matrix
   # c(cov_dates[i-1]:(cov_dates[i]-1)) is a vector of the indexes of all the days within a three month period
   # starting at index cov_dates[i-1]
   # dflr[c(cov_dates[i-1]:(cov_dates[i]-1)),c(2:dim(dflr)[2])] = all daily returns data in dflr for month 3 of the 
   # 3-month period that the covariance matrix was calculated on
-  daily_perform_1n[c(cov_dates[i-1]:(cov_dates[i]-1))]<-rowSums(sweep(
-                                                        dflr[c(cov_dates[i-1]:(cov_dates[i]-1)),c(2:dim(dflr)[2])], 
+  daily_perform_1n[c(cov_dates[i]:(cov_dates[i+1]-1))]<-rowSums(sweep(
+                                                        dflr[c(cov_dates[i]:(cov_dates[i+1]-1)),c(2:dim(dflr)[2])],
                                                         MARGIN=2, STATS=w_1n[[i]], FUN=`*`))   # MARGIN = 2 indicates sweep by columns
-                                                        # STATS = w_1n[[i]] means multiply (defined by FUN='*') each column in dflr by 
+                                                        # STATS = w_1n[[i]] means multiply (defined by FUN='*') each column in dflr by
                                                         # the corresponding column in the 1/N portfolio weights vector 
   # sweep essentially goes through and multiplies each column of returns by its corresponding portfolio weight
   # then it returns a matrix that's the same size as the original dflr matrix
   # row sums then sums this matrix by row to find total portfolio value on each day
 }
 
-for(i in c(4:(length(cov_dates)))){
+for(i in c(4:(length(cov_dates)-1))){
   # Same formula as above but using risk parity portfolio weights
-  daily_perform_rp[c(cov_dates[i-1]:(cov_dates[i]-1))]<-rowSums(sweep(dflr[c(cov_dates[i-1]:(cov_dates[i]-1)),
+  daily_perform_rp[c(cov_dates[i]:(cov_dates[i+1]-1))]<-rowSums(sweep(dflr[c(cov_dates[i]:(cov_dates[i+1]-1)),
                                                                            c(2:dim(dflr)[2])], MARGIN=2, w_rp[[i]], `*`))
 }
 
-for(i in c(4:(length(cov_dates)))){
+for(i in c(4:(length(cov_dates)-1))){
   # Same formula as above but using mean variance portfolio weights
-  daily_perform_mv[c(cov_dates[i-1]:(cov_dates[i]-1))]<-rowSums(sweep(dflr[c(cov_dates[i-1]:(cov_dates[i]-1)),
+  daily_perform_mv[c(cov_dates[i]:(cov_dates[i+1]-1))]<-rowSums(sweep(dflr[c(cov_dates[i]:(cov_dates[i+1]-1)),
                                                                            c(2:dim(dflr)[2])], MARGIN=2, w_mv[[i]], `*`))
 }
 
 
 # Find summary stats:
 # Initialize volatility arrays 
-monthly_vol_1n<-rep(NA,length(cov_dates))
-monthly_vol_rp<-rep(NA,length(cov_dates))
-monthly_vol_mv<-rep(NA,length(cov_dates))
-monthly_days_in_month<-rep(NA,length(cov_dates))
+monthly_vol_1n<-rep(NA,length(cov_dates)-1)
+monthly_vol_rp<-rep(NA,length(cov_dates)-1)
+monthly_vol_mv<-rep(NA,length(cov_dates)-1)
+monthly_days_in_month<-rep(NA,length(cov_dates)-1)
 
 # c(cov_dates[i-1]:(cov_dates[i]-1)) vector of indices for the last month (month 3) in each 3-month period
 
-for(i in c(4:(length(cov_dates)))){
-  monthly_vol_1n[i]<-sd(daily_perform_1n[c(cov_dates[i-1]:(cov_dates[i]-1))])
+for(i in c(4:(length(cov_dates)-1))){
+  monthly_vol_1n[i]<-sd(daily_perform_1n[c(cov_dates[i]:(cov_dates[i+1]-1))])
 }
-for(i in c(4:(length(cov_dates)))){
-  monthly_vol_rp[i]<-sd(daily_perform_rp[c(cov_dates[i-1]:(cov_dates[i]-1))])
+for(i in c(4:(length(cov_dates)-1))){
+  monthly_vol_rp[i]<-sd(daily_perform_rp[c(cov_dates[i]:(cov_dates[i+1]-1))])
 }
-for(i in c(4:(length(cov_dates)))){
-  monthly_vol_mv[i]<-sd(daily_perform_mv[c(cov_dates[i-1]:(cov_dates[i]-1))])
+for(i in c(4:(length(cov_dates)-1))){
+  monthly_vol_mv[i]<-sd(daily_perform_mv[c(cov_dates[i]:(cov_dates[i+1]-1))])
 }
-for(i in c(4:(length(cov_dates)))){
-  monthly_days_in_month[i]<-length(c(cov_dates[i-1]:(cov_dates[i]-1)))
+for(i in c(4:(length(cov_dates)-1))){
+  monthly_days_in_month[i]<-length(c(cov_dates[i]:(cov_dates[i+1]-1)))
 }
 
 # Returns
-monthly_r_1n<-rep(NA,length(cov_dates))
-monthly_r_rp<-rep(NA,length(cov_dates))
-monthly_r_mv<-rep(NA,length(cov_dates))
+monthly_r_1n<-rep(NA,length(cov_dates)-1)
+monthly_r_rp<-rep(NA,length(cov_dates)-1)
+monthly_r_mv<-rep(NA,length(cov_dates)-1)
 
 # Total portfolio return in a month = sum of the portfolio's daily log return for each day in the month
-for(i in c(4:(length(cov_dates)))){
-  monthly_r_1n[i]<-sum(daily_perform_1n[c(cov_dates[i-1]:(cov_dates[i]-1))])
+for(i in c(4:(length(cov_dates)-1))){
+  monthly_r_1n[i]<-sum(daily_perform_1n[c(cov_dates[i]:(cov_dates[i+1]-1))])
 }
-for(i in c(4:(length(cov_dates)))){
-  monthly_r_rp[i]<-sum(daily_perform_rp[c(cov_dates[i-1]:(cov_dates[i]-1))])
+for(i in c(4:(length(cov_dates)-1))){
+  monthly_r_rp[i]<-sum(daily_perform_rp[c(cov_dates[i]:(cov_dates[i+1]-1))])
 }
-for(i in c(4:(length(cov_dates)))){
-  monthly_r_mv[i]<-sum(daily_perform_mv[c(cov_dates[i-1]:(cov_dates[i]-1))])
+for(i in c(4:(length(cov_dates)-1))){
+  monthly_r_mv[i]<-sum(daily_perform_mv[c(cov_dates[i]:(cov_dates[i+1]-1))])
 }
 
 # Sharpe ratio = (monthly return)/[(daily volatility)*sqrt(# of days in a month)]
@@ -172,7 +172,7 @@ data.frame()
 
 # Add columns to the sharpes.csv file with the month start and end date
 month_start_date<- dflr$Date[month_start_indices]
-month_end_date<- dflr$Date[cov_dates]
+month_end_date<- dflr$Date[cov_dates-1]
 
 final_data<-data.frame(month_start_date,month_end_date,monthly_vol_1n, monthly_vol_rp, 
            monthly_vol_mv, monthly_r_1n, monthly_r_rp, monthly_r_mv, monthly_days_in_month, 
@@ -180,12 +180,12 @@ final_data<-data.frame(month_start_date,month_end_date,monthly_vol_1n, monthly_v
            sharpe_ratio_rp,
            sharpe_ratio_mv)
 
-setwd("~/Documents/UTO401/Thesis")
-write.csv(final_data, file="sharpes.csv")
+setwd("~/GitHubCode/1overN/NOkeke/Data")
+write.csv(final_data, file="predictive_model_target_sharpes.csv")
 
 
 #Quick plots of Sharpe ratio to see comparative differences in code
 par(mar = rep(2, 4))
 plot(month_start_date,sharpe_ratio_1n, type="l",col='purple')
-lines(dflr$Date[cov_dates],sharpe_ratio_rp,col = "red",type = 'l')
-lines(dflr$Date[cov_dates],sharpe_ratio_mv,col = "blue",type = 'l')
+lines(dflr$Date[cov_dates-1],sharpe_ratio_rp,col = "red",type = 'l')
+lines(dflr$Date[cov_dates-1],sharpe_ratio_mv,col = "blue",type = 'l')
