@@ -77,8 +77,13 @@ if __name__ == "__main__":
     feat2 = pd.DataFrame(
         columns=['feature-month_end_date', 'target-month_start_date'] + ['feat2_0.' + str(i) for i in range(3, 10)])
     feat3 = pd.DataFrame(
-        columns=['feature-month_end_date', 'target-month_start_date','feat3_eq_0', 'feat3_eq_1', 'feat3_bd_0',
-                 'feat3_bd_1', 'feat3_com_0', 'feat3_com_1'])
+        columns=['feature-month_end_date', 'target-month_start_date','feat3_eq_0', 'feat3_eq_1', 'feat3_eq_2',
+                 'feat3_eq_3', 'feat3_eq_4', 'feat3_bd_0', 'feat3_bd_1', 'feat3_com_0', 'feat3_com_1', 'feat3_com_2'])
+    feat4 = pd.DataFrame(
+        columns=['feature-month_end_date', 'target-month_start_date'] + ['feat4_eq_0.' + str(i) for i in range(3, 10)]
+                    + ['feat4_bd_0.' + str(i) for i in range(3, 10)] + ['feat4_com_0.' + str(i) for i in range(3, 10)])
+    feat5 = pd.DataFrame(
+        columns=['feature-month_end_date', 'target-month_start_date'] + ['feat5_' + str(i) for i in range(0, 4)])
 
     # Iterate through all the indices that mark the start of each month
     for i in range(0, len(month_start_indices)-3, 1):
@@ -107,8 +112,11 @@ if __name__ == "__main__":
         feat2.loc[i, 'feat2_0.3':] = num_eigenvectors
 
         '''
-        Feature #3: What % of variance is explained by the top 2 eigenvectors for each subset?
+        Feature #3: What % of variance is explained by the top n eigenvectors for each subset?
         Subsets: Equities, Bonds, Commodities
+        – Top 5 eigenvectors for equities
+        - Top 2 eigenvectors for bonds
+        - Top 3 eigenvectors for commodities
         '''
         Equities = ['LargeCap','SmallCap','Financials','Energy','Materials','Industrials','Info Tech',
                     'Cons. Discretionary','Health Care','Telecom','Cons. Staples','Utilities']
@@ -122,23 +130,69 @@ if __name__ == "__main__":
 
         # Compute features
         percent_var_eq = applyPCA(three_month_rets_eq)
-        top2_eq = percent_var_eq[0:2]
+        top5_eq = percent_var_eq[0:5]
         percent_var_bd = applyPCA(three_month_rets_bd)
         top2_bd = percent_var_bd[0:2]
         percent_var_com = applyPCA(three_month_rets_com)
-        top2_com = percent_var_com[0:2]
+        top3_com = percent_var_com[0:3]
 
         # Store the features in feat3
         feat3.loc[i, 'feature-month_end_date'] = asset_returns.loc[month_start_indices[i + 3] - 1, 'Date']
         feat3.loc[i, 'target-month_start_date'] = asset_returns.loc[month_start_indices[i + 3], 'Date']
-        feat3.loc[i, 'feat3_eq_0':'feat3_eq_1'] = top2_eq
+        feat3.loc[i, 'feat3_eq_0':'feat3_eq_4'] = top5_eq
         feat3.loc[i, 'feat3_bd_0':'feat3_bd_1'] = top2_bd
-        feat3.loc[i, 'feat3_com_0':'feat3_com_1'] = top2_com
+        feat3.loc[i, 'feat3_com_0':'feat3_com_2'] = top3_com
+
+        '''
+        Feature #4: How many eigenvectors are required to explain 30%, 40%, 50%, 60%, 70%, 80%, 
+                    90% of variability for each subset?
+        Subsets: Equities, Bonds, Commodities
+        '''
+        Equities = ['LargeCap', 'SmallCap', 'Financials', 'Energy', 'Materials', 'Industrials', 'Info Tech',
+                    'Cons. Discretionary', 'Health Care', 'Telecom', 'Cons. Staples', 'Utilities']
+        Bonds = ['US Aggregate', 'US Treasury', 'US Corporate', 'US High Yield']
+        Commodities = ['BCOM Index', 'BRENT CRUDE', 'WTI CRUDE', 'GOLD ', 'SILVER', 'CORN', 'SUGAR']
+
+        # Create dataframes for each subset
+        three_month_rets_eq = three_month_rets[Equities]
+        three_month_rets_bd = three_month_rets[Bonds]
+        three_month_rets_com = three_month_rets[Commodities]
+
+        # Compute features
+        num_eigenvectors_eq = getEigenReq(three_month_rets_eq, [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9])
+        num_eigenvectors_bd = getEigenReq(three_month_rets_bd, [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9])
+        num_eigenvectors_com = getEigenReq(three_month_rets_com, [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9])
+
+        # Store the features in feat4
+        feat4.loc[i, 'feature-month_end_date'] = asset_returns.loc[month_start_indices[i + 3] - 1, 'Date']
+        feat4.loc[i, 'target-month_start_date'] = asset_returns.loc[month_start_indices[i + 3], 'Date']
+        feat4.loc[i, 'feat4_eq_0.3':'feat4_eq_0.9'] = num_eigenvectors_eq
+        feat4.loc[i, 'feat4_bd_0.3':'feat4_bd_0.9'] = num_eigenvectors_bd
+        feat4.loc[i, 'feat4_com_0.3':'feat4_com_0.9'] = num_eigenvectors_com
+
+        '''
+        Feature #5: What % of variance is explained by the top 4 eigenvectors for the 'industries' subset? 
+        '''
+        Industries = ['Financials', 'Energy', 'Materials', 'Industrials', 'Info Tech',
+                    'Cons. Discretionary', 'Health Care', 'Telecom', 'Cons. Staples', 'Utilities']
+
+        # Create dataframes for the 'industries' subset
+        three_month_rets_ind = three_month_rets[Industries]
+
+        percent_var = applyPCA(three_month_rets_ind)
+        feat5_top4 = percent_var[0:4]
+
+        # Store the features in feat5
+        feat5.loc[i, 'feature-month_end_date'] = asset_returns.loc[month_start_indices[i + 3] - 1, 'Date']
+        feat5.loc[i, 'target-month_start_date'] = asset_returns.loc[month_start_indices[i + 3], 'Date']
+        feat5.loc[i, 'feat5_0':] = feat5_top4
 
     '''
     Save dataframe containing all features
     '''
     features = feat1.merge(feat2, how='outer', on=['feature-month_end_date', 'target-month_start_date'])
     features = features.merge(feat3, how='outer', on=['feature-month_end_date', 'target-month_start_date'])
+    features = features.merge(feat4, how='outer', on=['feature-month_end_date', 'target-month_start_date'])
+    features = features.merge(feat5, how='outer', on=['feature-month_end_date', 'target-month_start_date'])
 
     features.to_csv('Data/features.csv')

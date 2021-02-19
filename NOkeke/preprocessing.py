@@ -40,10 +40,10 @@ train = train.sample(frac=1, random_state=0)
 test = test.sample(frac=1, random_state=0)
 
 # Split the training and testing sets into features and targets
-features_train = train.loc[:,'feat1_0':'feat3_com_1']
+features_train = train.loc[:,'feat1_0':'feat5_3']
 target_train = train.loc[:, 'Max Sharpe']
 
-features_test = test.loc[:,'feat1_0':'feat3_com_1']
+features_test = test.loc[:,'feat1_0':'feat5_3']
 target_test = test.loc[:, 'Max Sharpe']
 
 # Save the training and testing sets

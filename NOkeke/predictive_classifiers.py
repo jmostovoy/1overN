@@ -25,7 +25,7 @@ class_to_num = {0: '1/N', 1: 'RP', 2: 'MVO'}
 Logistic Regression Classifier
 '''
 # Fit classifier
-logreg = OneVsRestClassifier(LogisticRegression())
+logreg = OneVsRestClassifier(LogisticRegression(max_iter=250))
 logreg.fit(features_train.values, target_train)
 logreg_score = logreg.decision_function(features_test)
 
@@ -51,7 +51,7 @@ for i in range(3):
 MLP Classifier
 '''
 # Fit classifier
-mlp = OneVsRestClassifier(MLPClassifier(max_iter=1500, random_state=0))
+mlp = OneVsRestClassifier(MLPClassifier(max_iter=2000, random_state=0))
 mlp.fit(features_train.values, target_train)
 mlp_score = mlp.predict_proba(features_test)
 
