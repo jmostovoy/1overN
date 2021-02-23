@@ -84,6 +84,9 @@ if __name__ == "__main__":
                     + ['feat4_bd_0.' + str(i) for i in range(3, 10)] + ['feat4_com_0.' + str(i) for i in range(3, 10)])
     feat5 = pd.DataFrame(
         columns=['feature-month_end_date', 'target-month_start_date'] + ['feat5_' + str(i) for i in range(0, 4)])
+    feat6 = pd.DataFrame(
+        columns=['feature-month_end_date', 'target-month_start_date', 'feat6_eq_max', 'feat6_eq_min',
+                 'feat6_bd_max', 'feat6_bd_min', 'feat6_com_max', 'feat6_com_min'])
 
     # Iterate through all the indices that mark the start of each month
     for i in range(0, len(month_start_indices)-3, 1):
@@ -187,6 +190,36 @@ if __name__ == "__main__":
         feat5.loc[i, 'target-month_start_date'] = asset_returns.loc[month_start_indices[i + 3], 'Date']
         feat5.loc[i, 'feat5_0':] = feat5_top4
 
+        '''
+        Feature #6: What is the max and min historical return over the 3-month training period for each subset?
+        Subsets: Equities, Bonds, Commodities
+        '''
+        Equities = ['LargeCap', 'SmallCap', 'Financials', 'Energy', 'Materials', 'Industrials', 'Info Tech',
+                    'Cons. Discretionary', 'Health Care', 'Telecom', 'Cons. Staples', 'Utilities']
+        Bonds = ['US Aggregate', 'US Treasury', 'US Corporate', 'US High Yield']
+        Commodities = ['BCOM Index', 'BRENT CRUDE', 'WTI CRUDE', 'GOLD ', 'SILVER', 'CORN', 'SUGAR']
+
+        # Create dataframes for each subset
+        three_month_rets_eq = three_month_rets[Equities]
+        three_month_rets_bd = three_month_rets[Bonds]
+        three_month_rets_com = three_month_rets[Commodities]
+
+        # Calculate max & min returns for each subset
+        eq_max = three_month_rets_eq.values.max()
+        eq_min = three_month_rets_eq.values.min()
+        bd_max = three_month_rets_bd.values.max()
+        bd_min = three_month_rets_bd.values.min()
+        com_max = three_month_rets_com.values.max()
+        com_min = three_month_rets_com.values.min()
+
+        # Store features
+        feat6.loc[i, 'feature-month_end_date'] = asset_returns.loc[month_start_indices[i + 3] - 1, 'Date']
+        feat6.loc[i, 'target-month_start_date'] = asset_returns.loc[month_start_indices[i + 3], 'Date']
+        feat6.loc[i, 'feat6_eq_max':'feat6_eq_min'] = [eq_max, eq_min]
+        feat6.loc[i, 'feat6_bd_max':'feat6_bd_min'] = [bd_max, bd_min]
+        feat6.loc[i, 'feat6_com_max':'feat6_com_min'] = [com_max, com_min]
+
+
     '''
     Save dataframe containing all features
     '''
@@ -194,5 +227,6 @@ if __name__ == "__main__":
     features = features.merge(feat3, how='outer', on=['feature-month_end_date', 'target-month_start_date'])
     features = features.merge(feat4, how='outer', on=['feature-month_end_date', 'target-month_start_date'])
     features = features.merge(feat5, how='outer', on=['feature-month_end_date', 'target-month_start_date'])
+    features = features.merge(feat6, how='outer', on=['feature-month_end_date', 'target-month_start_date'])
 
     features.to_csv('Data/features.csv')
