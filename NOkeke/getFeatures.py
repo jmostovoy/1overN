@@ -191,7 +191,7 @@ if __name__ == "__main__":
         feat5.loc[i, 'feat5_0':] = feat5_top4
 
         '''
-        Feature #6: What is the max and min historical return over the 3-month training period for each subset?
+        Feature #6: What is the max and min historical log-return over the 3-month training period for each subset?
         Subsets: Equities, Bonds, Commodities
         '''
         Equities = ['LargeCap', 'SmallCap', 'Financials', 'Energy', 'Materials', 'Industrials', 'Info Tech',

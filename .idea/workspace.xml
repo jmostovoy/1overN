@@ -2,15 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7c6fb574-869a-4eef-a6c3-26a3ed0e6201" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/1overN.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/1overN.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NOkeke/Data/features.csv" beforeDir="false" afterPath="$PROJECT_DIR$/NOkeke/Data/features.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NOkeke/Data/features_test.csv" beforeDir="false" afterPath="$PROJECT_DIR$/NOkeke/Data/features_test.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NOkeke/Data/features_train.csv" beforeDir="false" afterPath="$PROJECT_DIR$/NOkeke/Data/features_train.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/NOkeke/getFeatures.py" beforeDir="false" afterPath="$PROJECT_DIR$/NOkeke/getFeatures.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/NOkeke/predictive_classifiers.py" beforeDir="false" afterPath="$PROJECT_DIR$/NOkeke/predictive_classifiers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NOkeke/preprocessing.py" beforeDir="false" afterPath="$PROJECT_DIR$/NOkeke/preprocessing.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -112,16 +106,5 @@
       <updated>1614051414275</updated>
     </task>
     <servers />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/NOkeke/predictive_classifiers.py</url>
-          <line>106</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

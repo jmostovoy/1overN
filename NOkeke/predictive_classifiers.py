@@ -102,13 +102,15 @@ for i in range(3):
     feat_importance = rf.estimators_[i].feature_importances_
     feat_indices = np.argsort(feat_importance)[::-1]
 
-    # Only plot the top 10 most important features 
-    feat_indices = feat_indices[0:11]
+    # Only plot the top 10 most important features
+    feat_indices = feat_indices[0:10]
 
-    plt.figure()
-    plt.title('Random Forest Feature Importances; Class: '+class_to_num[i])
-    plt.bar(range(11), feat_importance[feat_indices],
-            color="m")
-    plt.xticks(range(11), features_train.columns[feat_indices], rotation=0)
-    plt.xlim([-1, 11])
-    plt.show()
+    print(features_train.columns[feat_indices])
+
+    # plt.figure()
+    # plt.title('Random Forest Feature Importances; Class: '+class_to_num[i])
+    # plt.bar(range(10), feat_importance[feat_indices],
+    #         color="m")
+    # plt.xticks(range(10), features_train.columns[feat_indices], rotation=0)
+    # plt.xlim([-1, 10])
+    # plt.show()
